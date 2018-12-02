@@ -16,15 +16,35 @@ Including another URLconf
 # from django.contrib import admin
 # from shop.settings import MEDIA_ROOT
 # from django.views.static import serve
-from django.urls import path
+import xadmin
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.documentation import include_docs_urls
+from rest_framework.routers import DefaultRouter
 
 
-import xadmin
+
+# from goods.views_base import GoodListView
+# from goods.views import GoodsListView
+from goods.views import GoodslistViewset
+
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+router.register(r'goods', GoodslistViewset, base_name='goods')
+
+# goods_list = GoodslistViewset.as_view({
+#      'get': 'list',
+# })
+
 
 
 urlpatterns = [
      path('xadmin/', xadmin.site.urls),
+     path('api-auth/', include('rest_framework.urls', namespace='rest_framwork')),
+     # path('goods/', GoodsListView.as_view(), name="good-list"),
+     # path('goods/', goods_list, name="good-list"),
+     path('', include(router.urls)),
+     path("docs/", include_docs_urls(title="ShopDemo")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
